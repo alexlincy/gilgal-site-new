@@ -2,7 +2,7 @@ import { Layout } from "@/components/layout/Layout";
 import { HeroBanner } from "@/components/ui/HeroBanner";
 import { BackToTop } from "@/components/ui/BackToTop";
 import { BookOpen, Droplets, Flame, Heart, Cross, Sparkles } from "lucide-react";
-import pentecostImage from "@/assets/pentecost-holy-spirit.jpg";
+import pentecostImage from "@/assets/sunset-ocean.jpg";
 
 const beliefs = [
   {

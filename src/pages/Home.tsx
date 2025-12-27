@@ -38,7 +38,6 @@ export default function Home() {
     <Layout>
       <HeroBanner
         title="IPC Gilgal"
-        titleSecondLine="Church"
         subtitle="A welcoming Malayalee Pentecostal community"
         subtitleSecondLine="united in faith and fellowship."
         location="Sharjah & Ras Al Khaimah, UAE"
