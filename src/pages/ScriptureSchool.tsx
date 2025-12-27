@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { BackToTop } from "@/components/ui/BackToTop";
 import { HeroBanner } from "@/components/ui/HeroBanner";
@@ -16,12 +16,17 @@ import {
   Lightbulb,
   Crown,
   Heart,
+  Info,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import scriptureSchoolLogo from "@/assets/scripture-school-logo-transparent.png";
+import scriptureSchoolLogo from "@/assets/scripture-school-logo-final.png";
 import communityPhoto from "@/assets/scripture-school-community.jpg";
 import { ageGroups } from "@/data/curriculumData";
 import { CurriculumAccordion, CurriculumAccordionHandle } from "@/components/scripture-school/CurriculumAccordion";
+
+// Curriculum visibility gate: Set to true to enable curriculum access, false to show access notice
+// This is intentionally gated for public viewing - curriculum details are available upon request
+const SHOW_CURRICULUM = false;
 
 const experiences = [
   {
@@ -98,10 +103,18 @@ const groupIcons: Record<string, React.ComponentType<{ className?: string }>> = 
 
 export default function ScriptureSchool() {
   const curriculumAccordionRef = useRef<CurriculumAccordionHandle>(null);
+  const [showAccessMessage, setShowAccessMessage] = useState(false);
 
   const handleAgeGroupClick = (groupId: string) => {
-    curriculumAccordionRef.current?.setActiveGroup(groupId);
-    curriculumAccordionRef.current?.scrollIntoView();
+    if (SHOW_CURRICULUM) {
+      curriculumAccordionRef.current?.setActiveGroup(groupId);
+      curriculumAccordionRef.current?.scrollIntoView();
+    } else {
+      // Show message when curriculum is gated
+      setShowAccessMessage(true);
+      // Hide message after 5 seconds
+      setTimeout(() => setShowAccessMessage(false), 5000);
+    }
   };
 
   return (
@@ -170,8 +183,14 @@ export default function ScriptureSchool() {
                 <span className="text-sm font-medium text-amber-800">Age Groups</span>
               </div>
               <h2 className="text-2xl md:text-3xl text-foreground">A Class for Every Child</h2>
-              <p className="text-muted-foreground mt-2 text-sm">Click a class to explore its curriculum</p>
+              {SHOW_CURRICULUM && (
+                <p className="text-muted-foreground mt-2 text-sm">Click a class to explore its curriculum</p>
+              )}
             </div>
+
+            <p className="text-center text-muted-foreground text-sm mb-6">
+              Age-based learning groups are shown below. Detailed curriculum content is shared with parents and students upon enrollment.
+            </p>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
               {ageGroups.map((group) => {
@@ -217,26 +236,42 @@ export default function ScriptureSchool() {
                 );
               })}
             </div>
+
+            {/* Access message when curriculum is gated */}
+            {!SHOW_CURRICULUM && showAccessMessage && (
+              <div className="mt-6 flex justify-center">
+                <div className="inline-flex items-center gap-2 px-4 py-2.5 bg-white/90 rounded-full shadow-md border border-amber-200/50 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <Info className="w-4 h-4 text-amber-600 shrink-0" />
+                  <p className="text-sm font-medium text-amber-800">
+                    Curriculum details available upon request.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
 
       {/* Tighter curved transition to curriculum */}
-      <div className="relative h-8 md:h-10 bg-amber-50/70">
-        <svg viewBox="0 0 1440 60" className="absolute bottom-0 w-full h-full" preserveAspectRatio="none">
-          <path d="M0,0 C480,60 960,60 1440,0 L1440,60 L0,60 Z" className="fill-emerald-900" />
-        </svg>
-      </div>
+      {SHOW_CURRICULUM && (
+        <>
+          <div className="relative h-8 md:h-10 bg-amber-50/70">
+            <svg viewBox="0 0 1440 60" className="absolute bottom-0 w-full h-full" preserveAspectRatio="none">
+              <path d="M0,0 C480,60 960,60 1440,0 L1440,60 L0,60 Z" className="fill-emerald-900" />
+            </svg>
+          </div>
 
-      {/* CURRICULUM ACCORDION SECTION */}
-      <CurriculumAccordion ref={curriculumAccordionRef} />
+          {/* CURRICULUM ACCORDION SECTION */}
+          <CurriculumAccordion ref={curriculumAccordionRef} />
 
-      {/* Curved transition out */}
-      <div className="relative h-10 md:h-12 bg-emerald-900">
-        <svg viewBox="0 0 1440 60" className="absolute bottom-0 w-full h-full" preserveAspectRatio="none">
-          <path d="M0,0 C480,60 960,60 1440,0 L1440,60 L0,60 Z" className="fill-background" />
-        </svg>
-      </div>
+          {/* Curved transition out */}
+          <div className="relative h-10 md:h-12 bg-emerald-900">
+            <svg viewBox="0 0 1440 60" className="absolute bottom-0 w-full h-full" preserveAspectRatio="none">
+              <path d="M0,0 C480,60 960,60 1440,0 L1440,60 L0,60 Z" className="fill-background" />
+            </svg>
+          </div>
+        </>
+      )}
 
       {/* CONTACT CTA */}
       <section className="bg-background py-16 md:py-20">

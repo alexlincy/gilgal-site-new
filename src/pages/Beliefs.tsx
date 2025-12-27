@@ -7,37 +7,37 @@ import pentecostImage from "@/assets/pentecost-holy-spirit.jpg";
 const beliefs = [
   {
     icon: BookOpen,
-    title: "Authority of the Bible",
+    title: "Authority of the Holy Scriptures",
     description:
-      "We believe the Bible is the inspired Word of God, providing guidance and truth for Christian life and faith. The Scriptures serve as the foundation for our beliefs and practices.",
+      "We believe that the Bible, consisting of the sixty-six books of the Old and New Testaments, is the inspired, infallible, and authoritative Word of God. The Scriptures are the complete revelation of God's will for the salvation of humanity and the supreme standard by which all human conduct, creeds, and opinions shall be tried.",
     color: "gold",
   },
   {
     icon: Cross,
     title: "Salvation through Jesus Christ",
     description:
-      "We believe in salvation through faith in Jesus Christ, recognizing Him as the Son of God and Savior. Through His life, death, and resurrection, redemption is offered to all who believe.",
+      "We believe that salvation is received through repentance toward God and faith in the Lord Jesus Christ, who is the only begotten Son of God, fully God and fully man. Through His substitutionary death on the cross and bodily resurrection, He accomplished redemption for all who believe. Salvation is by grace alone through faith alone, not by works, and results in the regeneration of the believer by the Holy Spirit.",
     color: "navy",
   },
   {
     icon: Droplets,
-    title: "Water Baptism",
+    title: "Water Baptism by Immersion",
     description:
-      "We practice water baptism by immersion as an outward expression of an inward faith. This ordinance signifies the believer's identification with Christ in His death, burial, and resurrection.",
+      "We believe that water baptism by immersion is a commandment of our Lord Jesus Christ, to be observed by all who have repented and believed in Him as Savior. This ordinance is a public declaration of the believer's identification with Christ in His death, burial, and resurrection, and serves as an outward sign of the inward work of regeneration accomplished by the Holy Spirit.",
     color: "gold",
   },
   {
     icon: Flame,
-    title: "Baptism of the Holy Spirit",
+    title: "Baptism in the Holy Spirit",
     description:
-      "We believe in the baptism of the Holy Spirit as described in the New Testament, empowering believers for Christian life and service. This experience is available to all believers.",
+      "We believe that the baptism in the Holy Spirit is a distinct experience subsequent to conversion, in which the Holy Spirit endues the believer with power for service and witness. The initial physical evidence of this baptism is speaking in other tongues as the Spirit gives utterance, as recorded in the book of Acts. This experience empowers believers for effective Christian life, ministry, and the manifestation of spiritual gifts.",
     color: "navy",
   },
   {
     icon: Heart,
-    title: "Divine Healing",
+    title: "Divine Healing & Christ's Return",
     description:
-      "We believe that God provides for healing according to His will. Prayer for the sick is practiced as part of the church's ministry, trusting in God's care and sovereignty.",
+      "We believe in divine healing as provided for in the atonement of Christ, and that it is the privilege of all believers to claim healing through prayer and faith in the name of Jesus. We also believe in the blessed hope of the personal, premillennial, and imminent return of our Lord Jesus Christ, when the dead in Christ will be raised incorruptible and the living saints will be caught up together with them to meet the Lord in the air.",
     color: "gold",
   },
 ];
@@ -83,34 +83,41 @@ export default function Beliefs() {
       </section>
 
       {/* Beliefs section with dove backdrop */}
-      <section className="relative pt-56 sm:pt-72 md:pt-96 lg:pt-[26rem] pb-16 md:pb-24 overflow-hidden">
-        {/* Background image - dove visible at top */}
+      <section className="relative pt-56 sm:pt-72 md:pt-96 lg:pt-32 pb-16 md:pb-24 overflow-hidden">
+        {/* Background image - dove visible at center */}
         <div 
           className="absolute inset-0 bg-cover bg-no-repeat"
           style={{ 
             backgroundImage: `url(${pentecostImage})`,
-            backgroundPosition: 'center 12%'
+            backgroundPosition: '10% 75%'
           }}
         />
         
-        {/* Sacred Grid of Belief Cards - positioned below dove safe zone */}
+        {/* Sacred Grid of Belief Cards - framing the dove */}
         <div className="section-container relative z-10">
           
-          {/* Desktop: 3 + 2 centered grid */}
+          {/* Desktop: 3-column layout with dove in center */}
           <div className="hidden lg:block max-w-5xl mx-auto">
-            {/* First row - 3 cards */}
-            <div className="grid grid-cols-3 gap-6 mb-6">
-              {beliefs.slice(0, 3).map((belief, index) => (
-                <BeliefCard key={index} belief={belief} />
-              ))}
-            </div>
-            {/* Second row - 2 cards centered */}
-            <div className="flex justify-center gap-6">
-              {beliefs.slice(3, 5).map((belief, index) => (
-                <div key={index} className="w-[calc(33.333%-1rem)]">
-                  <BeliefCard belief={belief} />
-                </div>
-              ))}
+            <div className="grid grid-cols-3 gap-5 items-start">
+              {/* Left column - first 2 cards stacked */}
+              <div className="space-y-5">
+                <BeliefCard belief={beliefs[0]} />
+                <BeliefCard belief={beliefs[1]} />
+              </div>
+              
+              {/* Middle column - empty space for dove at top, card below */}
+              <div className="flex flex-col">
+                {/* Empty space at top for dove visibility */}
+                <div className="h-64 flex-shrink-0"></div>
+                {/* Center card positioned below dove's tail */}
+                <BeliefCard belief={beliefs[4]} />
+              </div>
+              
+              {/* Right column - next 2 cards stacked */}
+              <div className="space-y-5">
+                <BeliefCard belief={beliefs[2]} />
+                <BeliefCard belief={beliefs[3]} />
+              </div>
             </div>
           </div>
 

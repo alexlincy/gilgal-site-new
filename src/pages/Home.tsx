@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import { BookOpen, ArrowRight, Globe, HandHeart, PlayCircle, Calendar, BookOpenText, Bus } from "lucide-react";
+import { BookOpen, ArrowRight, Globe, HandHeart, BookOpenText, Bus } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { HeroBanner } from "@/components/ui/HeroBanner";
 import { PastorMessage } from "@/components/home/PastorMessage";
@@ -61,133 +61,69 @@ export default function Home() {
             </h2>
           </div>
 
-          {/* Asymmetric Three-Card Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_0.7fr] gap-4 items-stretch">
+          {/* Growing Together in Faith - Full Width Card */}
+          <div className="relative rounded-2xl overflow-hidden min-h-[520px] lg:min-h-[600px] group">
+            {/* Background Image */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+              style={{ backgroundImage: `url(${worshipCommunity})` }}
+            />
+            {/* Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/75 to-primary/35" />
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/40 to-transparent" />
             
-            {/* Primary Card - Growing Together in Faith */}
-            <div className="relative rounded-2xl overflow-hidden min-h-[480px] lg:min-h-[520px] group">
-              {/* Background Image */}
-              <div 
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-                style={{ backgroundImage: `url(${worshipCommunity})` }}
-              />
-              {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/75 to-primary/35" />
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/40 to-transparent" />
-              
-              {/* Content */}
-              <div className="relative h-full flex flex-col justify-end p-6 md:p-8">
-                {/* Header Content */}
-                <div className="mb-5">
-                  <h3 className="text-white text-2xl md:text-3xl font-bold mb-3" style={{ textShadow: '0 4px 16px rgba(0,0,0,0.4)' }}>
-                    Growing Together in Faith
-                  </h3>
-                  <p className="text-white/90 text-sm md:text-base max-w-md leading-relaxed mb-4" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
-                    Join our vibrant community through worship, learning, and fellowship as we journey in Christ together.
-                  </p>
-                  {/* How We Serve Pill */}
-                  <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/90 text-primary text-sm font-bold shadow-lg">
-                    <HandHeart className="w-4 h-4" />
-                    How We Serve
-                  </span>
-                </div>
+            {/* Content */}
+            <div className="relative h-full flex flex-col justify-end p-8 md:p-10 lg:p-12">
+              {/* Header Content */}
+              <div className="mb-6 md:mb-8">
+                <h3 className="text-white text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-5" style={{ textShadow: '0 4px 16px rgba(0,0,0,0.4)' }}>
+                  Growing Together in Faith
+                </h3>
+                <p className="text-white/90 text-base md:text-lg lg:text-xl max-w-2xl leading-relaxed mb-5 md:mb-6" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
+                  Join our vibrant community through worship, learning, and fellowship as we journey in Christ together.
+                </p>
+                {/* How We Serve Pill */}
+                <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-accent/90 text-primary text-base font-bold shadow-lg">
+                  <HandHeart className="w-5 h-5" />
+                  How We Serve
+                </span>
+              </div>
 
-                {/* Ministry Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-4">
-                  {ministries.map((ministry) => (
-                    <Link
-                      key={ministry.id}
-                      to={ministry.link}
-                      onClick={() => window.scrollTo(0, 0)}
-                      className="group/card relative bg-white/12 hover:bg-white/20 backdrop-blur-md border border-white/15 hover:border-white/30 rounded-xl p-3.5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
-                    >
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <div className="w-8 h-8 rounded-lg bg-accent/90 flex items-center justify-center shadow-md">
-                          <ministry.icon className="w-4 h-4 text-primary" />
-                        </div>
-                        <h4 className="text-white font-semibold text-sm">{ministry.label}</h4>
+              {/* Ministry Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-5 md:mb-6">
+                {ministries.map((ministry) => (
+                  <Link
+                    key={ministry.id}
+                    to={ministry.link}
+                    onClick={() => window.scrollTo(0, 0)}
+                    className="group/card relative bg-white/12 hover:bg-white/20 backdrop-blur-md border border-white/15 hover:border-white/30 rounded-xl p-4 md:p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  >
+                    <div className="flex items-center gap-2.5 mb-2">
+                      <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-accent/90 flex items-center justify-center shadow-md">
+                        <ministry.icon className="w-5 h-5 text-primary" />
                       </div>
-                      <p className="text-white/75 text-xs leading-relaxed line-clamp-2">{ministry.description}</p>
-                      <span className="inline-flex items-center gap-1 text-accent text-xs font-semibold mt-2 group-hover/card:gap-1.5 transition-all">
-                        Learn more <ArrowRight className="w-3 h-3" />
-                      </span>
-                    </Link>
-                  ))}
-                </div>
+                      <h4 className="text-white font-semibold text-base md:text-lg">{ministry.label}</h4>
+                    </div>
+                    <p className="text-white/75 text-sm md:text-base leading-relaxed line-clamp-2">{ministry.description}</p>
+                    <span className="inline-flex items-center gap-1.5 text-accent text-sm md:text-base font-semibold mt-3 group-hover/card:gap-2 transition-all">
+                      Learn more <ArrowRight className="w-4 h-4" />
+                    </span>
+                  </Link>
+                ))}
+              </div>
 
-                {/* Info Tags */}
-                <div className="grid grid-cols-2 gap-2.5">
-                  <div className="flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/15 backdrop-blur-sm border border-white/10">
-                    <Globe className="w-4 h-4 text-accent" />
-                    <span className="text-white font-medium text-xs">Services in Malayalam</span>
-                  </div>
-                  <div className="flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/15 backdrop-blur-sm border border-white/10">
-                    <Bus className="w-5 h-5 text-accent" />
-                    <span className="text-white font-medium text-xs">Transportation available</span>
-                  </div>
+              {/* Info Tags */}
+              <div className="grid grid-cols-2 gap-3 md:gap-4">
+                <div className="flex items-center justify-center gap-2.5 px-4 py-3 md:px-5 md:py-3.5 rounded-xl bg-white/15 backdrop-blur-sm border border-white/10">
+                  <Globe className="w-5 h-5 text-accent" />
+                  <span className="text-white font-medium text-sm md:text-base">Services in Malayalam</span>
+                </div>
+                <div className="flex items-center justify-center gap-2.5 px-4 py-3 md:px-5 md:py-3.5 rounded-xl bg-white/15 backdrop-blur-sm border border-white/10">
+                  <Bus className="w-5 h-5 md:w-6 md:h-6 text-accent" />
+                  <span className="text-white font-medium text-sm md:text-base">Transportation available</span>
                 </div>
               </div>
             </div>
-
-            {/* Secondary Cards Column */}
-            <div className="flex flex-col gap-4">
-              {/* Media Card - Near Square */}
-              <Link 
-                to="/media" 
-                onClick={() => window.scrollTo(0, 0)}
-                className="group relative rounded-2xl overflow-hidden flex-1 min-h-[140px]"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-navy via-primary to-navy-light" />
-                <div className="absolute inset-0 pattern-grid opacity-10" />
-                <div className="absolute top-0 right-0 w-28 h-28 bg-accent/20 rounded-full -translate-y-1/3 translate-x-1/3 blur-2xl" />
-                
-                <div className="relative h-full flex flex-col justify-center p-5 md:p-6">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-11 h-11 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:bg-white/15 transition-all">
-                      <PlayCircle className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-white">Media & Teachings</h3>
-                    </div>
-                  </div>
-                  <p className="text-white/75 text-sm leading-relaxed mb-3">
-                    Sermons, worship recordings & photo gallery.
-                  </p>
-                  <span className="inline-flex items-center gap-1.5 text-accent text-sm font-semibold group-hover:gap-2.5 transition-all">
-                    Explore <ArrowRight className="w-4 h-4" />
-                  </span>
-                </div>
-              </Link>
-
-              {/* Events Card - Near Square */}
-              <Link 
-                to="/events" 
-                onClick={() => window.scrollTo(0, 0)}
-                className="group relative rounded-2xl overflow-hidden flex-1 min-h-[140px]"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-accent via-gold to-gold-dark" />
-                <div className="absolute inset-0 pattern-dots-gold opacity-20" />
-                <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary/15 rounded-full translate-y-1/3 -translate-x-1/3 blur-2xl" />
-                
-                <div className="relative h-full flex flex-col justify-center p-5 md:p-6">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-11 h-11 bg-primary/20 backdrop-blur-sm rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:bg-primary/25 transition-all">
-                      <Calendar className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-primary">Events & Services</h3>
-                    </div>
-                  </div>
-                  <p className="text-primary/80 text-sm leading-relaxed mb-3">
-                    Weekly services & community gatherings.
-                  </p>
-                  <span className="inline-flex items-center gap-1.5 text-primary text-sm font-semibold group-hover:gap-2.5 transition-all">
-                    View Schedule <ArrowRight className="w-4 h-4" />
-                  </span>
-                </div>
-              </Link>
-            </div>
-
           </div>
         </div>
       </section>

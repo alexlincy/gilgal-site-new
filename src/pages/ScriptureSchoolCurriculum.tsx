@@ -18,8 +18,12 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import scriptureSchoolLogo from "@/assets/scripture-school-logo-transparent.png";
+import scriptureSchoolLogo from "@/assets/scripture-school-logo-final.png";
 import { curriculumData } from "@/data/curriculumData";
+
+// Curriculum visibility gate: Set to true to show full curriculum details, false to show access notice
+// This is intentionally gated for public viewing - curriculum details are available upon request
+const SHOW_CURRICULUM = false;
 
 // Map URL hash to group index
 const groupHashToIndex: Record<string, number> = {
@@ -116,15 +120,17 @@ export default function ScriptureSchoolCurriculum() {
               </Button>
 
               <div className="flex flex-wrap gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="rounded-full border-border/60 bg-background/40 hover:bg-background"
-                  onClick={scrollToCurriculum}
-                >
-                  <ChevronDown className="w-4 h-4 mr-2" />
-                  Jump to Curriculum
-                </Button>
+                {SHOW_CURRICULUM && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="rounded-full border-border/60 bg-background/40 hover:bg-background"
+                    onClick={scrollToCurriculum}
+                  >
+                    <ChevronDown className="w-4 h-4 mr-2" />
+                    Jump to Curriculum
+                  </Button>
+                )}
 
                 <Button asChild className="rounded-full bg-accent hover:bg-accent/90 text-primary-foreground">
                   <Link to="/contact">Contact Us</Link>
@@ -132,9 +138,9 @@ export default function ScriptureSchoolCurriculum() {
               </div>
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-6">
+            <div className={`grid ${SHOW_CURRICULUM ? 'lg:grid-cols-3' : 'lg:grid-cols-1'} gap-6`}>
               {/* Main copy */}
-              <div className="lg:col-span-2">
+              <div className={SHOW_CURRICULUM ? 'lg:col-span-2' : 'lg:col-span-1'}>
                 <div className="card-warm bg-background/50 border border-border/40">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/20 to-gold-soft flex items-center justify-center shrink-0">
@@ -188,119 +194,138 @@ export default function ScriptureSchoolCurriculum() {
               </div>
 
               {/* Quick chips */}
-              <div className="lg:col-span-1">
-                <div className="card-warm bg-background/50 border border-border/40">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <Sparkles className="w-5 h-5 text-primary" />
+              {SHOW_CURRICULUM && (
+                <div className="lg:col-span-1">
+                  <div className="card-warm bg-background/50 border border-border/40">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <Sparkles className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground">Quick jump</p>
+                        <p className="text-sm text-muted-foreground">Open a group instantly</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-semibold text-foreground">Quick jump</p>
-                      <p className="text-sm text-muted-foreground">Open a group instantly</p>
+
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { label: "Sub-Junior", hash: "#sub-junior" },
+                        { label: "Junior", hash: "#junior" },
+                        { label: "Intermediate", hash: "#intermediate" },
+                        { label: "Senior", hash: "#senior" },
+                        { label: "Super-Senior", hash: "#super-senior" },
+                      ].map((g) => (
+                        <Button
+                          key={g.hash}
+                          asChild
+                          variant="outline"
+                          className="rounded-full border-border/60 bg-background/40 hover:bg-background text-sm px-4"
+                        >
+                          <Link to={`/scripture-school/curriculum${g.hash}`}>{g.label}</Link>
+                        </Button>
+                      ))}
                     </div>
-                  </div>
 
-                  <div className="flex flex-wrap gap-2">
-                    {[
-                      { label: "Sub-Junior", hash: "#sub-junior" },
-                      { label: "Junior", hash: "#junior" },
-                      { label: "Intermediate", hash: "#intermediate" },
-                      { label: "Senior", hash: "#senior" },
-                      { label: "Super-Senior", hash: "#super-senior" },
-                    ].map((g) => (
-                      <Button
-                        key={g.hash}
-                        asChild
-                        variant="outline"
-                        className="rounded-full border-border/60 bg-background/40 hover:bg-background text-sm px-4"
-                      >
-                        <Link to={`/scripture-school/curriculum${g.hash}`}>{g.label}</Link>
-                      </Button>
-                    ))}
-                  </div>
-
-                  <div className="mt-5 text-sm text-muted-foreground">
-                    Tip: click a group below to see sections and lessons.
+                    <div className="mt-5 text-sm text-muted-foreground">
+                      Tip: click a group below to see sections and lessons.
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Curriculum Accordion */}
+      {/* Curriculum Accordion or Access Notice */}
       <section id="curriculum-section" className="section-light page-section scroll-mt-20">
         <div className="section-container">
           <div className="max-w-4xl mx-auto">
-            <Accordion type="multiple" className="space-y-4" value={openGroups} onValueChange={setOpenGroups}>
-              {curriculumData.map((group, groupIndex) => {
-                const colors = groupColors[group.group] || groupColors["Junior"];
-                const icon = groupIcons[group.group] || <BookOpen className="w-5 h-5" />;
+            {SHOW_CURRICULUM ? (
+              <Accordion type="multiple" className="space-y-4" value={openGroups} onValueChange={setOpenGroups}>
+                {curriculumData.map((group, groupIndex) => {
+                  const colors = groupColors[group.group] || groupColors["Junior"];
+                  const icon = groupIcons[group.group] || <BookOpen className="w-5 h-5" />;
 
-                return (
-                  <AccordionItem
-                    key={group.group}
-                    value={`group-${groupIndex}`}
-                    className="border border-border/50 rounded-xl bg-card/50 overflow-hidden"
-                  >
-                    <AccordionTrigger className="px-6 py-5 hover:no-underline hover:bg-muted/30 transition-colors">
-                      <div className="flex items-center gap-4 text-left">
-                        <div
-                          className={`w-10 h-10 rounded-lg bg-gradient-to-br ${colors.accent} flex items-center justify-center ${colors.text} shrink-0`}
-                        >
-                          {icon}
-                        </div>
-                        <div>
-                          <h3 className="text-lg font-semibold text-foreground">{group.group}</h3>
-                          <p className="text-sm text-muted-foreground mt-0.5">Age {group.ageRange}</p>
-                        </div>
-                      </div>
-                    </AccordionTrigger>
-
-                    <AccordionContent className="px-6 pb-6">
-                      <Accordion type="multiple" className="space-y-3 mt-2">
-                        {group.sections.map((section, sectionIndex) => (
-                          <AccordionItem
-                            key={section.title}
-                            value={`section-${groupIndex}-${sectionIndex}`}
-                            className="border border-border/30 rounded-lg bg-background/50 overflow-hidden"
+                  return (
+                    <AccordionItem
+                      key={group.group}
+                      value={`group-${groupIndex}`}
+                      className="border border-border/50 rounded-xl bg-card/50 overflow-hidden"
+                    >
+                      <AccordionTrigger className="px-6 py-5 hover:no-underline hover:bg-muted/30 transition-colors">
+                        <div className="flex items-center gap-4 text-left">
+                          <div
+                            className={`w-10 h-10 rounded-lg bg-gradient-to-br ${colors.accent} flex items-center justify-center ${colors.text} shrink-0`}
                           >
-                            <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-muted/20 transition-colors text-base">
-                              <span className="font-medium text-foreground">{section.title}</span>
-                            </AccordionTrigger>
+                            {icon}
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-semibold text-foreground">{group.group}</h3>
+                            <p className="text-sm text-muted-foreground mt-0.5">Age {group.ageRange}</p>
+                          </div>
+                        </div>
+                      </AccordionTrigger>
 
-                            <AccordionContent className="px-4 pb-4">
-                              <ul className="space-y-2.5 mt-2">
-                                {section.lessons.map((lesson) => (
-                                  <li
-                                    key={lesson.number}
-                                    className="flex items-start gap-3 py-2 px-3 rounded-lg bg-muted/20"
-                                  >
-                                    <span className="text-sm font-medium text-accent min-w-[2rem]">
-                                      {lesson.number}.
-                                    </span>
-                                    <span className="text-sm text-foreground flex-1">{lesson.title}</span>
-                                    {lesson.regionExamFocus && (
-                                      <Badge
-                                        variant="outline"
-                                        className="border-accent/50 text-accent bg-accent/5 text-xs shrink-0"
-                                      >
-                                        Region Exam Focus
-                                      </Badge>
-                                    )}
-                                  </li>
-                                ))}
-                              </ul>
-                            </AccordionContent>
-                          </AccordionItem>
-                        ))}
-                      </Accordion>
-                    </AccordionContent>
-                  </AccordionItem>
-                );
-              })}
-            </Accordion>
+                      <AccordionContent className="px-6 pb-6">
+                        <Accordion type="multiple" className="space-y-3 mt-2">
+                          {group.sections.map((section, sectionIndex) => (
+                            <AccordionItem
+                              key={section.title}
+                              value={`section-${groupIndex}-${sectionIndex}`}
+                              className="border border-border/30 rounded-lg bg-background/50 overflow-hidden"
+                            >
+                              <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-muted/20 transition-colors text-base">
+                                <span className="font-medium text-foreground">{section.title}</span>
+                              </AccordionTrigger>
+
+                              <AccordionContent className="px-4 pb-4">
+                                <ul className="space-y-2.5 mt-2">
+                                  {section.lessons.map((lesson) => (
+                                    <li
+                                      key={lesson.number}
+                                      className="flex items-start gap-3 py-2 px-3 rounded-lg bg-muted/20"
+                                    >
+                                      <span className="text-sm font-medium text-accent min-w-[2rem]">
+                                        {lesson.number}.
+                                      </span>
+                                      <span className="text-sm text-foreground flex-1">{lesson.title}</span>
+                                      {lesson.regionExamFocus && (
+                                        <Badge
+                                          variant="outline"
+                                          className="border-accent/50 text-accent bg-accent/5 text-xs shrink-0"
+                                        >
+                                          Region Exam Focus
+                                        </Badge>
+                                      )}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </AccordionContent>
+                            </AccordionItem>
+                          ))}
+                        </Accordion>
+                      </AccordionContent>
+                    </AccordionItem>
+                  );
+                })}
+              </Accordion>
+            ) : (
+              <div className="flex justify-center">
+                <div className="card-warm max-w-2xl w-full text-center">
+                  <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-accent/20 to-gold-soft flex items-center justify-center mx-auto mb-6">
+                    <BookOpen className="w-8 h-8 text-accent" />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-4">Curriculum Access</h2>
+                  <p className="text-muted-foreground leading-relaxed text-base md:text-lg mb-6">
+                    Detailed lesson plans and curriculum materials are available upon request or for enrolled students. Please contact the church for more information.
+                  </p>
+                  <Button asChild className="rounded-full bg-accent hover:bg-accent/90 text-primary-foreground">
+                    <Link to="/contact">Contact Us</Link>
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>

@@ -1,18 +1,18 @@
 import { Layout } from "@/components/layout/Layout";
 import { HeroBanner } from "@/components/ui/HeroBanner";
 import { BackToTop } from "@/components/ui/BackToTop";
-import { MapPin, Users, Heart, Sparkles, Phone, ChevronLeft, ChevronRight } from "lucide-react";
+import { MapPin, Users, Heart, Sparkles, Phone, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { LeadershipCard } from "@/components/home/LeadershipCard";
 import worshipBg from "@/assets/worship-community.jpg";
 import leader1 from "@/assets/leader-1.jpg";
 import leader2 from "@/assets/evg-sajan-k-george.jpg";
-import leader3 from "@/assets/leader-3.jpg";
+import leader3 from "@/assets/br-siby-mathew.jpg";
 
 const leadership = [
-  { name: "Pr. John Varghese", role: "President", phone: "+971 50 189 2016", image: leader1, imagePosition: "center 15%" },
-  { name: "Evg. Sajan K George", role: "Secretary", phone: "+971 50 575 6808", image: leader2, imagePosition: "center 20%" },
-  { name: "Br. Siby Mathew", role: "Joint Secretary", phone: "+971 50 219 5883", image: leader3, imagePosition: "center 20%" },
+  { name: "Pr. John Varghese", role: "President", phone: "+971 50 189 2016", image: leader1, imagePosition: "center 1%" },
+  { name: "Evg. Sajan K George", role: "Secretary", phone: "+971 50 575 6808", image: leader2, imagePosition: "center 45%" },
+  { name: "Br. Siby Mathew", role: "Joint Secretary", phone: "+971 50 219 5883", image: leader3, imagePosition: "center 10%" },
 ];
 
 export default function About() {
@@ -30,25 +30,71 @@ export default function About() {
         primaryCta={{ text: "Contact Us", link: "/contact" }}
       />
 
-      {/* Main content with alternating sections */}
+      {/* Main content with single-column reading flow */}
       <section className="section-light page-section">
         <div className="section-container">
-          <div className="max-w-4xl mx-auto">
-            {/* History & Mission */}
-            <div className="card-warm mb-10">
+          <div className="max-w-3xl mx-auto">
+            {/* Our Church Card */}
+            <div className="card-warm mb-10 md:mb-12">
               <div className="flex items-center gap-3 mb-6">
                 <Sparkles className="w-5 h-5 text-accent" />
                 <div className="accent-line-sm" />
               </div>
               <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-6">Our Church</h2>
-              <p className="text-muted-foreground leading-relaxed mb-4 text-lg">
+              <p className="text-muted-foreground leading-relaxed mb-5 text-base md:text-lg">
                 IPC Gilgal Church is a congregation of the Indian Pentecostal Church, one of the largest Pentecostal denominations with a rich heritage of Pentecostal faith and worship. Our church serves as a spiritual home for believers in the Sharjah and Ras Al Khaimah emirates of the United Arab Emirates.
               </p>
-              <p className="text-muted-foreground leading-relaxed mb-4">
+              <p className="text-muted-foreground leading-relaxed mb-5 text-base md:text-lg">
                 We are a community of families, individuals, and young people who come together for worship, fellowship, and mutual encouragement in our Pentecostal faith. Our services and programs are designed to nurture spiritual growth and build meaningful connections among our members.
               </p>
-              <p className="text-muted-foreground leading-relaxed">
+              <p className="text-muted-foreground leading-relaxed text-base md:text-lg">
                 As part of the broader IPC family, we maintain strong ties with fellow congregations while serving the unique needs of our local community in the UAE.
+              </p>
+            </div>
+
+            {/* Our History Card */}
+            <div className="card-warm mb-10 md:mb-12">
+              <div className="flex items-center gap-3 mb-6">
+                <Sparkles className="w-5 h-5 text-accent" />
+                <div className="accent-line-sm" />
+              </div>
+              <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-6">Our History</h2>
+              <p className="text-muted-foreground leading-relaxed mb-5 text-base md:text-lg">
+                IPC Gilgal Church was established on 12 February 2017 in Sharjah with a vision to serve the Pentecostal faith community in the United Arab Emirates. The church was founded to lead believers into a deeper life of worship, rooted in the Word of God and committed to worshipping Him in spirit and in truth.
+              </p>
+              <p className="text-muted-foreground leading-relaxed mb-5 text-base md:text-lg">
+                As the church continued to grow, its ministry was expanded in November 2021 to Ras Al Khaimah, extending pastoral care and fellowship to believers in another emirate of the UAE.
+              </p>
+              <p className="text-muted-foreground leading-relaxed text-base md:text-lg">
+                Guided by Pentecostal values, the teachings of Scripture, and the leading of the Holy Spirit, IPC Gilgal Church remains committed to spiritual growth, unity, and the advancement of God's Kingdom. Through prayerful leadership and a shared vision, the church continues to move forward, serving the community and fulfilling its calling with purpose and faith.
+              </p>
+            </div>
+
+            {/* Our Affiliation Card */}
+            <div className="card-warm">
+              <div className="flex items-center gap-3 mb-6">
+                <Sparkles className="w-5 h-5 text-accent" />
+                <div className="accent-line-sm" />
+              </div>
+              <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-6">Our Affiliation</h2>
+              <p className="text-muted-foreground leading-relaxed mb-5 text-base md:text-lg">
+                IPC Gilgal Church is proud to be part of IPC International, a global Pentecostal denomination with a rich tradition of spreading the gospel and nurturing communities of faith around the world. Through this affiliation, we are connected to a larger network of churches that share our commitment to Pentecostal doctrine, worship, and mission.
+              </p>
+              <p className="text-muted-foreground leading-relaxed mb-5 text-base md:text-lg">
+                This connection provides us with spiritual guidance, fellowship opportunities, and a sense of belonging to a worldwide movement dedicated to serving God and building His Kingdom. Our participation in IPC International strengthens our local ministry and allows us to contribute to the broader work of the Church globally.
+              </p>
+              <p className="text-muted-foreground leading-relaxed text-base md:text-lg">
+                To learn more about IPC International and its global mission, visit{" "}
+                <a
+                  href="https://ipcinternational.live/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:text-primary/80 underline underline-offset-2 font-medium inline-flex items-center gap-1 transition-colors"
+                >
+                  ipcinternational.live
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+                .
               </p>
             </div>
           </div>

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Mail, Phone, Facebook, Youtube } from "lucide-react";
-import logo from "@/assets/ipc-gilgal-logo.png";
+import logo from "@/assets/church-logo.png";
 
 export function Footer() {
   return (
