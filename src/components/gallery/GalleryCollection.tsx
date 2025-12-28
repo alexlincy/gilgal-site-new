@@ -13,11 +13,15 @@ import { cn } from "@/lib/utils";
  */
 export interface GalleryImage {
   id?: string;
-  type?: "image" | "video";
-  src: string;
-  poster?: string;
+  type?: "image" | "video"; // Legacy field for backward compatibility
+  mimeType?: string; // New field from API (e.g., "image/jpeg", "video/mp4")
+  src: string; // For images: thumbnailUrl, for videos: fullImageUrl
+  poster?: string; // For videos: thumbnailUrl
   alt: string;
   caption?: string;
+  // API response fields (when coming from Google Drive API)
+  thumbnailUrl?: string;
+  fullImageUrl?: string;
 }
 
 export interface GalleryCollectionData {
@@ -42,11 +46,41 @@ export function GalleryCollection({
   hideHeader = false,
 }: GalleryCollectionProps) {
   const displayImages = useMemo(() => {
-    const list = (collection.images || []).map((m, idx) => ({
-      ...m,
-      type: m.type ?? "image",
-      _idx: idx,
-    }));
+    const list = (collection.images || []).map((m, idx) => {
+      // Determine type from mimeType if available, otherwise use type field
+      let mediaType: "image" | "video" = m.type ?? "image";
+      if (m.mimeType) {
+        mediaType = m.mimeType.startsWith("video/") ? "video" : "image";
+      }
+      
+      // If coming from API with thumbnailUrl/fullImageUrl, map to src/poster
+      let src = m.src;
+      let poster = m.poster;
+      
+      if (m.thumbnailUrl || m.fullImageUrl) {
+        if (mediaType === "video") {
+          // For videos: thumbnailUrl is used as poster for preview
+          // fullImageUrl is used as video src in video elements (lightbox and fallback)
+          poster = m.thumbnailUrl || m.poster;
+          // Keep src as fullImageUrl for video elements (when no poster)
+          src = m.fullImageUrl || m.src;
+        } else {
+          // For images: thumbnailUrl for preview, fullImageUrl for full view in lightbox
+          src = m.thumbnailUrl || m.src;
+        }
+      }
+      
+      return {
+        ...m,
+        type: mediaType,
+        src,
+        poster,
+        _idx: idx,
+        // Preserve API fields for lightbox (fullImageUrl for videos, fullImageUrl for images in lightbox)
+        thumbnailUrl: m.thumbnailUrl,
+        fullImageUrl: m.fullImageUrl,
+      };
+    });
     return typeof maxImages === "number" ? list.slice(0, maxImages) : list;
   }, [collection.images, maxImages]);
 
@@ -180,7 +214,8 @@ export function GalleryCollection({
               >
                 <CarouselContent className="-ml-0">
                   {displayImages.map((media, index) => {
-                    const isVideo = media.type === "video";
+                    // Detect video from mimeType or type field
+                    const isVideo = media.mimeType?.startsWith("video/") || media.type === "video";
                     const hasSrc = Boolean(media.src);
 
                     return (
@@ -210,7 +245,7 @@ export function GalleryCollection({
                             </div>
                           ) : isVideo ? (
                             <div className="absolute inset-0">
-                              {/* Preview uses poster if provided; actual playback happens in lightbox */}
+                              {/* Preview uses poster/thumbnail; actual video playback with fullImageUrl happens in lightbox */}
                               {media.poster ? (
                                 <img
                                   src={media.poster}
@@ -220,11 +255,11 @@ export function GalleryCollection({
                                 />
                               ) : (
                                 <video
-                                  src={media.src}
+                                  src={(media as any).fullImageUrl || media.src}
                                   className="w-full h-full object-cover"
                                   muted
                                   playsInline
-                                  preload="metadata"
+                                  preload="none"
                                 />
                               )}
 
@@ -285,39 +320,42 @@ export function GalleryCollection({
           {/* Thumbnails - desktop */}
           {count > 1 && (
             <div className="hidden md:flex justify-start gap-2 mt-4 max-w-4xl overflow-x-auto pb-1">
-              {displayImages.map((media, index) => (
-                <button
-                  key={media.id ?? `${collection.id}-thumb-${index}`}
-                  onClick={() => scrollTo(index)}
-                  className={cn(
-                    "flex-shrink-0 w-20 h-14 rounded-lg overflow-hidden border-2 transition-all duration-200",
-                    current === index
-                      ? "border-primary ring-2 ring-primary/20 shadow-md"
-                      : "border-border/40 opacity-60 hover:opacity-100 hover:border-border",
-                  )}
-                  aria-label={`View item ${index + 1}: ${media.alt || collection.title}`}
-                >
-                  {media.src ? (
-                    media.type === "video" ? (
-                      <>
-                        {media.poster ? (
-                          <img src={media.poster} alt="" loading="lazy" className="w-full h-full object-cover" />
+                  {displayImages.map((media, index) => {
+                    const isVideo = media.mimeType?.startsWith("video/") || media.type === "video";
+                    return (
+                      <button
+                        key={media.id ?? `${collection.id}-thumb-${index}`}
+                        onClick={() => scrollTo(index)}
+                        className={cn(
+                          "flex-shrink-0 w-20 h-14 rounded-lg overflow-hidden border-2 transition-all duration-200",
+                          current === index
+                            ? "border-primary ring-2 ring-primary/20 shadow-md"
+                            : "border-border/40 opacity-60 hover:opacity-100 hover:border-border",
+                        )}
+                        aria-label={`View item ${index + 1}: ${media.alt || collection.title}`}
+                      >
+                        {media.src ? (
+                          isVideo ? (
+                            <>
+                              {media.poster ? (
+                                <img src={media.poster} alt="" loading="lazy" className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full bg-muted flex items-center justify-center">
+                                  <Play className="w-4 h-4 text-muted-foreground/50" />
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <img src={media.src} alt="" loading="lazy" className="w-full h-full object-cover" />
+                          )
                         ) : (
                           <div className="w-full h-full bg-muted flex items-center justify-center">
-                            <Play className="w-4 h-4 text-muted-foreground/50" />
+                            <ImageIcon className="w-4 h-4 text-muted-foreground/30" />
                           </div>
                         )}
-                      </>
-                    ) : (
-                      <img src={media.src} alt="" loading="lazy" className="w-full h-full object-cover" />
-                    )
-                  ) : (
-                    <div className="w-full h-full bg-muted flex items-center justify-center">
-                      <ImageIcon className="w-4 h-4 text-muted-foreground/30" />
-                    </div>
-                  )}
-                </button>
-              ))}
+                      </button>
+                    );
+                  })}
             </div>
           )}
 
@@ -363,22 +401,31 @@ export function GalleryCollection({
                 <div className="w-full max-w-5xl">
                   <div className="bg-black/30 rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
                     <div className="relative bg-black aspect-[16/10] flex items-center justify-center">
-                      {displayImages[lightboxIndex]?.type === "video" ? (
-                        <video
-                          src={displayImages[lightboxIndex]?.src}
-                          poster={displayImages[lightboxIndex]?.poster}
-                          controls
-                          autoPlay
-                          playsInline
-                          className="w-full h-full object-contain bg-black"
-                        />
-                      ) : (
-                        <img
-                          src={displayImages[lightboxIndex]?.src}
-                          alt={displayImages[lightboxIndex]?.alt || collection.title}
-                          className="w-full h-full object-contain bg-black"
-                        />
-                      )}
+                      {(() => {
+                        const currentMedia = displayImages[lightboxIndex];
+                        const isVideo = currentMedia?.mimeType?.startsWith("video/") || currentMedia?.type === "video";
+                        const videoSrc = currentMedia?.fullImageUrl || currentMedia?.src;
+                        const imageSrc = currentMedia?.fullImageUrl || currentMedia?.src;
+                        
+                        return isVideo ? (
+                          <video
+                            src={videoSrc}
+                            poster={currentMedia?.poster}
+                            controls
+                            autoPlay
+                            playsInline
+                            preload="auto"
+                            className="w-full h-full object-contain bg-black"
+                          />
+                        ) : (
+                          <img
+                            src={imageSrc}
+                            alt={currentMedia?.alt || collection.title}
+                            className="w-full h-full object-contain bg-black"
+                            loading="eager"
+                          />
+                        );
+                      })()}
                     </div>
 
                     {/* Caption */}

@@ -16,7 +16,8 @@ export function GalleryLightbox({ open, items, index, onClose, onPrev, onNext }:
   const overlayRef = useRef<HTMLDivElement>(null);
 
   const item = items[index];
-  const isVideo = (item?.type ?? "image") === "video";
+  // Detect video from mimeType or type field
+  const isVideo = item?.mimeType?.startsWith("video/") || (item?.type ?? "image") === "video";
   const caption = item?.caption ?? "";
 
   const safeIndexText = useMemo(() => {
@@ -118,18 +119,21 @@ export function GalleryLightbox({ open, items, index, onClose, onPrev, onNext }:
           >
             {isVideo ? (
               <video
-                key={item.src}
-                src={item.src}
+                key={item.id || item.src}
+                src={(item as any).fullImageUrl || item.src}
+                poster={item.poster}
                 controls
                 autoPlay
+                preload="auto"
                 className="max-w-full max-h-[80vh] rounded-lg"
               />
             ) : (
               <img
-                key={item.src}
-                src={item.src}
+                key={item.id || item.src}
+                src={(item as any).fullImageUrl || item.src}
                 alt={item.alt}
                 className="max-w-full max-h-[80vh] object-contain rounded-lg"
+                loading="eager"
               />
             )}
           </div>
