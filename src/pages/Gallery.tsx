@@ -8,7 +8,15 @@ import { GalleryCollection } from "@/components/gallery/GalleryCollection";
 import { GalleryLightbox } from "@/components/gallery/GalleryLightbox";
 import { galleryCollections } from "@/data/galleryData";
 import { cn } from "@/lib/utils";
-import type { GalleryImage as APIGalleryImage } from "@/api/gallery";
+
+// Type matching the API response structure
+interface APIGalleryImage {
+  id: string;
+  name: string;
+  mimeType: string;
+  thumbnailUrl: string;
+  fullImageUrl: string;
+}
 
 // Type for album structure from API
 interface Album {
