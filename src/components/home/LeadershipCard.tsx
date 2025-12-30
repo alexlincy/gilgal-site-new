@@ -6,9 +6,10 @@ interface LeadershipCardProps {
   phone: string;
   image?: string;
   imagePosition?: string;
+  imageScale?: number;
 }
 
-export function LeadershipCard({ name, role, phone, image, imagePosition = "center 20%" }: LeadershipCardProps) {
+export function LeadershipCard({ name, role, phone, image, imagePosition = "center 20%", imageScale = 1 }: LeadershipCardProps) {
   return (
     <div className="bg-card rounded-2xl p-6 text-center shadow-sm border border-border hover:shadow-md transition-all duration-300 group">
       {/* Avatar with gradient ring */}
@@ -20,7 +21,10 @@ export function LeadershipCard({ name, role, phone, image, imagePosition = "cent
               src={image} 
               alt={name} 
               className="w-full h-full object-cover"
-              style={{ objectPosition: imagePosition }}
+              style={{ 
+                objectPosition: imagePosition,
+                transform: `scale(${imageScale})`
+              }}
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-muted to-muted/80 flex items-center justify-center">

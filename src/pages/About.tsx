@@ -10,8 +10,8 @@ import leader2 from "@/assets/evg-sajan-k-george.jpg";
 import leader3 from "@/assets/br-siby-mathew.jpg";
 
 const leadership = [
-  { name: "Pr. John Varghese", role: "President", phone: "+971 50 189 2016", image: leader1, imagePosition: "center 1%" },
-  { name: "Evg. Sajan K George", role: "Secretary", phone: "+971 50 575 6808", image: leader2, imagePosition: "center 45%" },
+  { name: "Pr. John Varghese", role: "President", phone: "+971 50 189 2016", image: leader1, imagePosition: "center -50%", imageScale: 1.8 },
+  { name: "Evg. Sajan K George", role: "Secretary", phone: "+971 50 575 6808", image: leader2, imagePosition: "center 50%" },
   { name: "Br. Siby Mathew", role: "Joint Secretary", phone: "+971 50 219 5883", image: leader3, imagePosition: "center 10%" },
 ];
 

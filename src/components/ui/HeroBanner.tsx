@@ -77,7 +77,7 @@ export function HeroBanner({
               }}
             >
               <h1>
-                <span className="block text-4xl sm:text-5xl md:text-[3.5rem] lg:text-6xl font-extrabold text-white tracking-tight leading-[1.05] md:whitespace-nowrap">
+                <span className="block text-4xl sm:text-5xl md:text-[3.5rem] lg:text-6xl font-extrabold text-white tracking-tight leading-[1.05] md:whitespace-nowrap" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
                   {title}
                   {titleSecondLine && ` ${titleSecondLine}`}
                 </span>

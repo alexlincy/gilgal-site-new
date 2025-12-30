@@ -78,25 +78,40 @@ async function fetchGalleryImages(folderId: string): Promise<GalleryImage[]> {
   try {
     // Fetch files from the folder using Google Drive API v3 (both images and videos)
     const imageQuery = `'${folderId}'+in+parents+and+(mimeType+contains+'image/'+or+mimeType+contains+'video/')`;
-    const response = await fetch(
-      `https://www.googleapis.com/drive/v3/files?q=${imageQuery}&key=${apiKey}&fields=files(id,name,mimeType,thumbnailLink,webViewLink)&supportsAllDrives=true&includeItemsFromAllDrives=true`
-    );
+    const allFiles: any[] = [];
+    let nextPageToken: string | undefined = undefined;
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        `Google Drive API error: ${response.status} ${response.statusText}. ${errorData.error?.message || ''}`
-      );
-    }
+    // Handle pagination - fetch all pages
+    do {
+      let url = `https://www.googleapis.com/drive/v3/files?q=${imageQuery}&key=${apiKey}&fields=nextPageToken,files(id,name,mimeType,thumbnailLink,webViewLink)&supportsAllDrives=true&includeItemsFromAllDrives=true&pageSize=1000`;
+      if (nextPageToken) {
+        url += `&pageToken=${encodeURIComponent(nextPageToken)}`;
+      }
 
-    const data = await response.json();
+      const response = await fetch(url);
 
-    if (!data.files || !Array.isArray(data.files)) {
-      throw new Error('Invalid response from Google Drive API');
-    }
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          `Google Drive API error: ${response.status} ${response.statusText}. ${errorData.error?.message || ''}`
+        );
+      }
+
+      const data = await response.json();
+
+      if (!data.files || !Array.isArray(data.files)) {
+        throw new Error('Invalid response from Google Drive API');
+      }
+
+      allFiles.push(...data.files);
+      nextPageToken = data.nextPageToken;
+      console.log(`[Gallery API] Fetched ${data.files.length} files, total so far: ${allFiles.length}, hasNextPage: ${!!nextPageToken}`);
+    } while (nextPageToken);
+
+    console.log(`[Gallery API] Total files fetched: ${allFiles.length}`);
 
     // Filter and map files to GalleryImage format
-    const images: GalleryImage[] = data.files
+    const images: GalleryImage[] = allFiles
       .filter((file: any) => {
         // Filter by supported image and video types
         const mimeType = file.mimeType?.toLowerCase() || '';
@@ -122,6 +137,7 @@ async function fetchGalleryImages(folderId: string): Promise<GalleryImage[]> {
         };
       });
 
+    console.log(`[Gallery API] Filtered to ${images.length} supported images/videos`);
     return images;
   } catch (error) {
     console.error('Error fetching gallery images:', error);
@@ -148,24 +164,38 @@ async function listSubfolders(parentFolderId: string): Promise<Array<{id: string
   try {
     // Query for folders only (mimeType = 'application/vnd.google-apps.folder')
     const folderQuery = `'${parentFolderId}'+in+parents+and+mimeType='application/vnd.google-apps.folder'`;
-    const response = await fetch(
-      `https://www.googleapis.com/drive/v3/files?q=${folderQuery}&key=${apiKey}&fields=files(id,name)&supportsAllDrives=true&includeItemsFromAllDrives=true&orderBy=name`
-    );
+    const allFolders: any[] = [];
+    let nextPageToken: string | undefined = undefined;
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        `Google Drive API error: ${response.status} ${response.statusText}. ${errorData.error?.message || ''}`
-      );
-    }
+    // Handle pagination - fetch all pages
+    do {
+      let url = `https://www.googleapis.com/drive/v3/files?q=${folderQuery}&key=${apiKey}&fields=nextPageToken,files(id,name)&supportsAllDrives=true&includeItemsFromAllDrives=true&orderBy=name&pageSize=1000`;
+      if (nextPageToken) {
+        url += `&pageToken=${encodeURIComponent(nextPageToken)}`;
+      }
 
-    const data = await response.json();
+      const response = await fetch(url);
 
-    if (!data.files || !Array.isArray(data.files)) {
-      throw new Error('Invalid response from Google Drive API');
-    }
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          `Google Drive API error: ${response.status} ${response.statusText}. ${errorData.error?.message || ''}`
+        );
+      }
 
-    return data.files.map((folder: any) => ({
+      const data = await response.json();
+
+      if (!data.files || !Array.isArray(data.files)) {
+        throw new Error('Invalid response from Google Drive API');
+      }
+
+      allFolders.push(...data.files);
+      nextPageToken = data.nextPageToken;
+      console.log(`[Gallery API] Fetched ${data.files.length} folders, total so far: ${allFolders.length}, hasNextPage: ${!!nextPageToken}`);
+    } while (nextPageToken);
+
+    console.log(`[Gallery API] Total subfolders found: ${allFolders.length}`);
+    return allFolders.map((folder: any) => ({
       id: folder.id,
       name: folder.name || 'Untitled',
     }));
@@ -236,9 +266,11 @@ async function fetchGalleryAlbums(parentFolderId: string): Promise<GalleryAlbums
 
     if (subfolders.length > 0) {
       // Subfolders exist → treat each folder as an album
+      console.log(`[Gallery API] Found ${subfolders.length} subfolders, treating as albums`);
       const albums: GalleryAlbum[] = await Promise.all(
         subfolders.map(async (folder) => {
           const items = await fetchGalleryImages(folder.id);
+          console.log(`[Gallery API] Album "${folder.name}": ${items.length} items`);
           return {
             id: folder.id,
             name: folder.name,
@@ -248,16 +280,20 @@ async function fetchGalleryAlbums(parentFolderId: string): Promise<GalleryAlbums
       );
 
       // Filter out empty albums
+      const filteredAlbums = albums.filter((album) => album.items.length > 0);
+      console.log(`[Gallery API] Returning ${filteredAlbums.length} non-empty albums from subfolders`);
       return {
-        albums: albums.filter((album) => album.items.length > 0),
+        albums: filteredAlbums,
       };
     } else {
       // No subfolders → group files by filename-based album names
+      console.log(`[Gallery API] No subfolders found, grouping files by filename pattern`);
       const allFiles = await fetchGalleryImages(parentFolderId);
       const albums = groupFilesByAlbum(allFiles);
-      
+      const filteredAlbums = albums.filter((album) => album.items.length > 0);
+      console.log(`[Gallery API] Returning ${filteredAlbums.length} albums from filename grouping`);
       return {
-        albums: albums.filter((album) => album.items.length > 0),
+        albums: filteredAlbums,
       };
     }
   } catch (error) {
@@ -309,6 +345,7 @@ export default async function handler(
 
     // Default: return albums format using hybrid logic
     const albumsResponse = await fetchGalleryAlbums(folderId);
+    console.log(`[Gallery API] Successfully returning ${albumsResponse.albums.length} albums`);
     return res.status(200).json(albumsResponse);
   } catch (error) {
     console.error('Gallery API error:', error);

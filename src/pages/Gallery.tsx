@@ -61,46 +61,54 @@ export default function Gallery() {
   const PAGINATION_THRESHOLD = 20;
   const [displayedCount, setDisplayedCount] = useState<Record<string, number>>({});
 
+  // TEMPORARY: Disabled for static hosting - Gallery API calls are disabled
+  // To re-enable: Uncomment the useEffect below and remove the static placeholder section
   // Fetch albums from API on page load
-  useEffect(() => {
-    const fetchAlbums = async () => {
-      // If no folderId, skip API call and use existing galleryCollections data
-      if (!folderId) {
-        return;
-      }
+  // useEffect(() => {
+  //   const fetchAlbums = async () => {
+  //     // If no folderId, skip API call and use existing galleryCollections data
+  //     if (!folderId) {
+  //       return;
+  //     }
 
-      setIsLoading(true);
-      setError(null);
+  //     setIsLoading(true);
+  //     setError(null);
       
-      try {
-        const response = await fetch(`/api/gallery?folderId=${encodeURIComponent(folderId)}`);
+  //     try {
+  //       console.log('[Gallery] Fetching albums from API with folderId:', folderId);
+  //       const response = await fetch(`/api/gallery?folderId=${encodeURIComponent(folderId)}`);
         
-        if (!response.ok) {
-          throw new Error(`Failed to fetch gallery: ${response.status} ${response.statusText}`);
-        }
+  //       if (!response.ok) {
+  //         const errorText = await response.text();
+  //         console.error('[Gallery] API error response:', response.status, errorText);
+  //         throw new Error(`Failed to fetch gallery: ${response.status} ${response.statusText}`);
+  //       }
         
-        const data: AlbumsResponse = await response.json();
+  //       const data: AlbumsResponse = await response.json();
+  //       console.log('[Gallery] API response received:', { albumCount: data.albums?.length || 0, albums: data.albums });
         
-        if (data.albums && data.albums.length > 0) {
-          setAlbums(data.albums);
-          // Set first album as default
-          setActiveAlbumId(data.albums[0].id);
-        } else {
-          setAlbums([]);
-          setActiveAlbumId(null);
-        }
-      } catch (err) {
-        console.error("Error fetching gallery albums:", err);
-        setError(err instanceof Error ? err.message : "Failed to load gallery");
-        setAlbums([]);
-        setActiveAlbumId(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  //       if (data.albums && data.albums.length > 0) {
+  //         console.log('[Gallery] Setting albums:', data.albums.map(a => ({ name: a.name, itemCount: a.items.length })));
+  //         setAlbums(data.albums);
+  //         // Set first album as default
+  //         setActiveAlbumId(data.albums[0].id);
+  //       } else {
+  //         console.warn('[Gallery] No albums returned from API, falling back to placeholders');
+  //         setAlbums([]);
+  //         setActiveAlbumId(null);
+  //       }
+  //     } catch (err) {
+  //       console.error("Error fetching gallery albums:", err);
+  //       setError(err instanceof Error ? err.message : "Failed to load gallery");
+  //       setAlbums([]);
+  //       setActiveAlbumId(null);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
 
-    fetchAlbums();
-  }, [folderId]);
+  //   fetchAlbums();
+  // }, [folderId]);
 
   // Reset pagination when album changes
   useEffect(() => {
@@ -267,6 +275,22 @@ export default function Gallery() {
 
       <section className="section-light page-section">
         <div className="section-container">
+          {/* TEMPORARY: Static placeholder for static hosting - Gallery API disabled */}
+          {/* To re-enable dynamic gallery: Uncomment the useEffect above and restore the gallery content below */}
+          <div className="py-16">
+            <div className="max-w-md mx-auto text-center">
+              <div className="w-20 h-20 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-6">
+                <Camera className="w-10 h-10 text-muted-foreground/40" />
+              </div>
+              <h2 className="text-h3 font-heading font-semibold text-foreground mb-3">Gallery</h2>
+              <p className="text-muted-foreground">
+                Our photo gallery is being updated. Please check back soon.
+              </p>
+            </div>
+          </div>
+
+          {/* TEMPORARY: Gallery content below is disabled for static hosting */}
+          {/* 
           {isLoading && (
             <div className="py-16">
               <div className="max-w-md mx-auto text-center">
@@ -326,10 +350,8 @@ export default function Gallery() {
 
           {!isLoading && !error && hasCollections && hasAnyImages && (
             <div className="mt-6">
-              {/* Album selector - Tabs on desktop, scrollable pills on mobile */}
               {albums.length > 0 && (
                 <div className="mb-6">
-                  {/* Desktop: Tabs */}
                   <div className="hidden md:flex border-b border-border">
                     {albums.map((album) => (
                       <button
@@ -346,7 +368,6 @@ export default function Gallery() {
                       </button>
                     ))}
                   </div>
-                  {/* Mobile: Horizontally scrollable pills */}
                   <div className="md:hidden overflow-x-auto -mx-4 px-4 pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                     <div className="flex gap-2 min-w-max">
                       {albums.map((album) => (
@@ -368,7 +389,6 @@ export default function Gallery() {
                 </div>
               )}
               
-              {/* Fallback: Category selector (only if no albums) */}
               {albums.length === 0 && categories.length > 0 && (
                 <div className="mb-6">
                   <div className="hidden md:flex border-b border-border">
@@ -413,7 +433,6 @@ export default function Gallery() {
                 showViewAllLink={false}
               />
 
-              {/* Load More button - only show if pagination enabled and more items available */}
               {shouldShowPagination && hasMoreItems && (
                 <div className="mt-6 flex justify-center">
                   <button
@@ -435,6 +454,7 @@ export default function Gallery() {
               />
             </div>
           )}
+          */}
         </div>
       </section>
     </Layout>
