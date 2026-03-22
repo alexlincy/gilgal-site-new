@@ -57,24 +57,24 @@
     --navy: 218 44% 21%;
     --navy-foreground: 0 0% 100%;
     --navy-light: 218 35% 35%;
-    
+
     /* Keep dove-blue as subtle accent of deep blue */
     --dove-blue: 218 30% 45%;
     --dove-blue-light: 40 30% 92%;
-    
+
     /* Cream #F6F1E7 */
     --cream: 40 43% 94%;
     --cream-dark: 40 35% 90%;
-    
+
     /* Warm cream variants */
     --warm: 40 40% 92%;
     --warm-dark: 40 30% 88%;
-    
+
     /* Gold #D4A12A */
     --gold: 43 70% 50%;
     --gold-soft: 43 50% 90%;
     --gold-dark: 43 70% 40%;
-    
+
     /* Sand - cream variant */
     --sand: 40 35% 88%;
     --sand-dark: 40 30% 82%;
@@ -122,20 +122,20 @@
     --navy: 218 44% 25%;
     --navy-foreground: 0 0% 100%;
     --navy-light: 218 35% 40%;
-    
+
     --dove-blue: 218 30% 50%;
     --dove-blue-light: 218 30% 22%;
-    
+
     --cream: 40 20% 15%;
     --cream-dark: 40 15% 10%;
-    
+
     --warm: 40 20% 18%;
     --warm-dark: 40 15% 12%;
-    
+
     --gold: 43 70% 55%;
     --gold-soft: 43 35% 20%;
     --gold-dark: 43 60% 45%;
-    
+
     --sand: 40 25% 18%;
     --sand-dark: 40 20% 14%;
 
@@ -225,13 +225,22 @@
   }
 
   /* Navigation, buttons, UI labels - Montserrat */
-  nav, button, .btn-primary, .btn-secondary, .btn-accent, .btn-ghost, .btn-gold, label, .label-badge {
+  nav,
+  button,
+  .btn-primary,
+  .btn-secondary,
+  .btn-accent,
+  .btn-ghost,
+  .btn-gold,
+  label,
+  .label-badge {
     font-family: 'Montserrat', system-ui, sans-serif;
   }
 }
 
 /* Typography variants - LOCKED SCALE */
 @layer components {
+
   /* Scripture text variant - Lora italic */
   .text-scripture {
     font-family: 'Lora', Georgia, serif;
@@ -490,7 +499,7 @@
 
   /* Grid patterns */
   .pattern-grid {
-    background-image: 
+    background-image:
       linear-gradient(hsl(var(--primary-foreground) / 0.04) 1px, transparent 1px),
       linear-gradient(90deg, hsl(var(--primary-foreground) / 0.04) 1px, transparent 1px);
     background-size: 60px 60px;
@@ -508,7 +517,7 @@
 
   /* Star pattern for scripture sections */
   .pattern-stars {
-    background-image: 
+    background-image:
       radial-gradient(hsl(var(--accent) / 0.15) 1px, transparent 1px),
       radial-gradient(hsl(var(--primary-foreground) / 0.08) 1px, transparent 1px);
     background-size: 40px 40px, 20px 20px;
@@ -543,18 +552,37 @@
 
   /* Animations */
   @keyframes float {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(2deg); }
+
+    0%,
+    100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+
+    50% {
+      transform: translateY(-20px) rotate(2deg);
+    }
   }
 
   @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+    0% {
+      background-position: -200% 0;
+    }
+
+    100% {
+      background-position: 200% 0;
+    }
   }
 
   @keyframes gentle-pulse {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 1; }
+
+    0%,
+    100% {
+      opacity: 0.6;
+    }
+
+    50% {
+      opacity: 1;
+    }
   }
 
   .animate-float {
@@ -581,12 +609,12 @@
   }
 
   .hover-zoom img,
-  .hover-zoom > div {
+  .hover-zoom>div {
     @apply transition-transform duration-500;
   }
 
   .hover-zoom:hover img,
-  .hover-zoom:hover > div {
+  .hover-zoom:hover>div {
     @apply scale-110;
   }
 

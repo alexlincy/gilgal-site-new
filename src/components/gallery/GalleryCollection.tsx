@@ -52,11 +52,11 @@ export function GalleryCollection({
       if (m.mimeType) {
         mediaType = m.mimeType.startsWith("video/") ? "video" : "image";
       }
-      
+
       // If coming from API with thumbnailUrl/fullImageUrl, map to src/poster
       let src = m.src;
       let poster = m.poster;
-      
+
       if (m.thumbnailUrl || m.fullImageUrl) {
         if (mediaType === "video") {
           // For videos: thumbnailUrl is used as poster for preview
@@ -69,7 +69,7 @@ export function GalleryCollection({
           src = m.thumbnailUrl || m.src;
         }
       }
-      
+
       return {
         ...m,
         type: mediaType,
@@ -250,6 +250,7 @@ export function GalleryCollection({
                                 <img
                                   src={media.poster}
                                   alt={media.alt}
+                                  referrerPolicy="no-referrer"
                                   className="w-full h-full object-cover"
                                   loading="lazy"
                                 />
@@ -273,6 +274,7 @@ export function GalleryCollection({
                             <img
                               src={media.src}
                               alt={media.alt || collection.title}
+                              referrerPolicy="no-referrer"
                               className="w-full h-full object-cover"
                               loading="lazy"
                             />
@@ -320,42 +322,42 @@ export function GalleryCollection({
           {/* Thumbnails - desktop */}
           {count > 1 && (
             <div className="hidden md:flex justify-start gap-2 mt-4 max-w-4xl overflow-x-auto pb-1">
-                  {displayImages.map((media, index) => {
-                    const isVideo = media.mimeType?.startsWith("video/") || media.type === "video";
-                    return (
-                      <button
-                        key={media.id ?? `${collection.id}-thumb-${index}`}
-                        onClick={() => scrollTo(index)}
-                        className={cn(
-                          "flex-shrink-0 w-20 h-14 rounded-lg overflow-hidden border-2 transition-all duration-200",
-                          current === index
-                            ? "border-primary ring-2 ring-primary/20 shadow-md"
-                            : "border-border/40 opacity-60 hover:opacity-100 hover:border-border",
-                        )}
-                        aria-label={`View item ${index + 1}: ${media.alt || collection.title}`}
-                      >
-                        {media.src ? (
-                          isVideo ? (
-                            <>
-                              {media.poster ? (
-                                <img src={media.poster} alt="" loading="lazy" className="w-full h-full object-cover" />
-                              ) : (
-                                <div className="w-full h-full bg-muted flex items-center justify-center">
-                                  <Play className="w-4 h-4 text-muted-foreground/50" />
-                                </div>
-                              )}
-                            </>
+              {displayImages.map((media, index) => {
+                const isVideo = media.mimeType?.startsWith("video/") || media.type === "video";
+                return (
+                  <button
+                    key={media.id ?? `${collection.id}-thumb-${index}`}
+                    onClick={() => scrollTo(index)}
+                    className={cn(
+                      "flex-shrink-0 w-20 h-14 rounded-lg overflow-hidden border-2 transition-all duration-200",
+                      current === index
+                        ? "border-primary ring-2 ring-primary/20 shadow-md"
+                        : "border-border/40 opacity-60 hover:opacity-100 hover:border-border",
+                    )}
+                    aria-label={`View item ${index + 1}: ${media.alt || collection.title}`}
+                  >
+                    {media.src ? (
+                      isVideo ? (
+                        <>
+                          {media.poster ? (
+                            <img src={media.poster} alt="" loading="lazy" className="w-full h-full object-cover" />
                           ) : (
-                            <img src={media.src} alt="" loading="lazy" className="w-full h-full object-cover" />
-                          )
-                        ) : (
-                          <div className="w-full h-full bg-muted flex items-center justify-center">
-                            <ImageIcon className="w-4 h-4 text-muted-foreground/30" />
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
+                            <div className="w-full h-full bg-muted flex items-center justify-center">
+                              <Play className="w-4 h-4 text-muted-foreground/50" />
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <img src={media.src} alt="" loading="lazy" className="w-full h-full object-cover" />
+                      )
+                    ) : (
+                      <div className="w-full h-full bg-muted flex items-center justify-center">
+                        <ImageIcon className="w-4 h-4 text-muted-foreground/30" />
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           )}
 
@@ -367,6 +369,8 @@ export function GalleryCollection({
                 onClick={closeLightbox}
                 className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center"
                 aria-label="Close"
+
+                style={{ zIndex: 5000 }}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -383,6 +387,7 @@ export function GalleryCollection({
                     onClick={prevLightbox}
                     className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center"
                     aria-label="Previous"
+                    style={{ zIndex: 5000 }}
                   >
                     <ChevronLeft className="w-6 h-6" />
                   </button>
@@ -390,6 +395,7 @@ export function GalleryCollection({
                     onClick={nextLightbox}
                     className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center"
                     aria-label="Next"
+                    style={{ zIndex: 5000 }}
                   >
                     <ChevronRight className="w-6 h-6" />
                   </button>
@@ -406,7 +412,7 @@ export function GalleryCollection({
                         const isVideo = currentMedia?.mimeType?.startsWith("video/") || currentMedia?.type === "video";
                         const videoSrc = currentMedia?.fullImageUrl || currentMedia?.src;
                         const imageSrc = currentMedia?.fullImageUrl || currentMedia?.src;
-                        
+
                         return isVideo ? (
                           <video
                             src={videoSrc}
@@ -421,6 +427,7 @@ export function GalleryCollection({
                           <img
                             src={imageSrc}
                             alt={currentMedia?.alt || collection.title}
+                            referrerPolicy="no-referrer"
                             className="w-full h-full object-contain bg-black"
                             loading="eager"
                           />

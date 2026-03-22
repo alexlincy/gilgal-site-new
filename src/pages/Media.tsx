@@ -2,53 +2,28 @@ import { useMemo, useState, useCallback } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { HeroBanner } from "@/components/ui/HeroBanner";
 import { BackToTop } from "@/components/ui/BackToTop";
-import { Youtube, PlayCircle, BookOpen, Sparkles } from "lucide-react";
+import { Youtube, PlayCircle, BookOpen, Sparkles, Loader2, AlertCircle } from "lucide-react";
 
 import { GalleryCollection } from "@/components/gallery/GalleryCollection";
 import { GalleryLightbox } from "@/components/gallery/GalleryLightbox";
-import { galleryCollections } from "@/data/galleryData";
-import { cn } from "@/lib/utils";
 import { ResourcesDevotionsTeaser } from "@/components/resources/ResourcesDevotionsTeaser";
-
+import { useGoogleDriveGallery } from "@/hooks/useGoogleDriveGallery";
 
 export default function Media() {
-  // ✅ ONE continuous gallery (flatten + filter)
-  const allImages = useMemo(() => {
-    return galleryCollections.flatMap((collection) =>
-      collection.images
-        .filter((img) => !!img.src)
-        .map((img) => ({
-          ...img,
-          category: collection.title,
-        })),
-    );
-  }, []);
+  const { images: allImages, loading, error } = useGoogleDriveGallery();
 
   const hasAnyImages = allImages.length > 0;
-
-  const categories = useMemo(() => {
-    const set = new Set<string>();
-    galleryCollections.forEach((c) => set.add(c.title));
-    return ["All", ...Array.from(set)];
-  }, []);
-
-  const [selectedCategory, setSelectedCategory] = useState("All");
-
-  const filteredImages = useMemo(() => {
-    if (selectedCategory === "All") return allImages;
-    return allImages.filter((img: any) => img.category === selectedCategory);
-  }, [allImages, selectedCategory]);
 
   const mergedCollection = useMemo(() => {
     return {
       id: "media-merged-gallery",
       title: "Gallery",
       description: "Swipe sideways to browse photos and videos.",
-      images: filteredImages,
+      images: allImages,
     };
-  }, [filteredImages]);
+  }, [allImages]);
 
-  // ✅ Lightbox state (tap → full screen)
+  // Lightbox state
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
@@ -60,14 +35,14 @@ export default function Media() {
   const closeLightbox = useCallback(() => setLightboxOpen(false), []);
 
   const prevLightbox = useCallback(() => {
-    if (!filteredImages.length) return;
-    setLightboxIndex((i) => (i - 1 + filteredImages.length) % filteredImages.length);
-  }, [filteredImages.length]);
+    if (!allImages.length) return;
+    setLightboxIndex((i) => (i - 1 + allImages.length) % allImages.length);
+  }, [allImages.length]);
 
   const nextLightbox = useCallback(() => {
-    if (!filteredImages.length) return;
-    setLightboxIndex((i) => (i + 1) % filteredImages.length);
-  }, [filteredImages.length]);
+    if (!allImages.length) return;
+    setLightboxIndex((i) => (i + 1) % allImages.length);
+  }, [allImages.length]);
 
   return (
     <Layout>
@@ -81,31 +56,68 @@ export default function Media() {
       <section className="section-light page-section">
         <div className="section-container">
           <div className="max-w-4xl mx-auto">
-            {/* ✅ Gallery Carousel ABOVE YouTube */}
-            {hasAnyImages && (
-              <div className="mt-12">
-                <GalleryCollection collection={mergedCollection as any} showViewAllLink={false} />
 
-                <GalleryLightbox
-                  open={lightboxOpen}
-                  items={filteredImages as any}
-                  index={lightboxIndex}
-                  onClose={closeLightbox}
-                  onPrev={prevLightbox}
-                  onNext={nextLightbox}
-                />
-              </div>
-            )}
+            {/* ── Gallery Section ─────────────────────────────────────── */}
+            <div className="mt-12">
+
+              {/* Loading state */}
+              {loading && (
+                <div className="flex flex-col items-center justify-center py-24 gap-4 text-muted-foreground">
+                  <Loader2 className="w-8 h-8 animate-spin text-accent" />
+                  <p className="text-sm">Loading gallery from Google Drive…</p>
+                </div>
+              )}
+
+              {/* Error state */}
+              {!loading && error && (
+                <div className="flex flex-col items-center justify-center py-16 gap-3 text-destructive">
+                  <AlertCircle className="w-8 h-8" />
+                  <p className="text-sm font-medium">Could not load gallery</p>
+                  <p className="text-xs text-muted-foreground max-w-sm text-center">{error}</p>
+                </div>
+              )}
+
+              {/* Gallery carousel */}
+              {!loading && !error && hasAnyImages && (
+                <>
+                  <GalleryCollection
+                    collection={mergedCollection as any}
+                    showViewAllLink={false}
+                    onImageClick={openLightbox}
+                  />
+                  <GalleryLightbox
+                    open={lightboxOpen}
+                    items={allImages as any}
+                    index={lightboxIndex}
+                    onClose={closeLightbox}
+                    onPrev={prevLightbox}
+                    onNext={nextLightbox}
+                  />
+                </>
+              )}
+
+              {/* Empty state */}
+              {!loading && !error && !hasAnyImages && (
+                <div className="flex flex-col items-center justify-center py-16 gap-3 text-muted-foreground">
+                  <p className="text-sm">No photos found in the gallery folder.</p>
+                  <p className="text-xs">Upload images to your Google Drive folder to see them here.</p>
+                </div>
+              )}
+
+            </div>
+            {/* ──────────────────────────────────────────────────────────── */}
 
             {/* YouTube Channel - Featured */}
-            <div className="card-warm mb-10 relative overflow-hidden">
+            <div className="card-warm mb-10 mt-14 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-48 h-48 bg-destructive/10 rounded-full blur-3xl" />
               <div className="relative flex flex-col md:flex-row gap-8 items-center">
                 <div className="w-24 h-24 bg-gradient-to-br from-destructive/20 to-destructive/5 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                   <Youtube className="w-12 h-12 text-destructive" />
                 </div>
                 <div className="text-center md:text-left">
-                  <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-3">Our YouTube Channel</h2>
+                  <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-3">
+                    Our YouTube Channel
+                  </h2>
                   <p className="text-muted-foreground mb-6 text-lg leading-relaxed">
                     Visit our YouTube channel to access recorded sermons, teachings, and special programs from IPC
                     Gilgal Church.
@@ -161,6 +173,7 @@ export default function Media() {
             <div className="mt-14">
               <ResourcesDevotionsTeaser />
             </div>
+
           </div>
         </div>
       </section>
